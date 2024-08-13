@@ -44,13 +44,13 @@ client.once("ready", () => {
 
       // 디스코드 채널에 메시지 전송
       try {
-        // 디스코드 클라이언트가 채널을 캐시하도록 강제
-        const channel = await client.channels.chache.find(channel => channel.type === "GUILD_TEXT");
-        if (channel) {
-          channel.send(`${userName}님이 채널에 참여했습니다!`);
-        } else {
-          console.error("Channel not found.");
-        }
+        client.guilds.cache.forEach((guild) => {
+          guild.channels.cache.forEach((channel) => {
+            if (channel.type === "GUILD_TEXT") {
+              channel.send(`${userName}님이 참여하셨습니다.`);
+            }
+          });
+        });
       } catch (error) {
         console.error("Error sending message:", error);
       }
