@@ -46,7 +46,7 @@ client.once("ready", () => {
       try {
         client.guilds.cache.forEach((guild) => {
           guild.channels.cache.forEach((channel) => {
-            if (channel.type === "GUILD_TEXT") {
+            if (channel.isTextBased()) {
               channel.send(`${userName}님이 참여하셨습니다.`);
             }
           });
