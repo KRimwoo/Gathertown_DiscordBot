@@ -7,7 +7,6 @@ const {
   GATHER_API,
   SPACE_ID,
   DISCORD_TOKEN,
-  DISCORD_CHANNEL,
 } = require("./config.json");
 
 // Discord 클라이언트 생성
@@ -46,7 +45,7 @@ client.once("ready", () => {
       // 디스코드 채널에 메시지 전송
       try {
         // 디스코드 클라이언트가 채널을 캐시하도록 강제
-        const channel = await client.channels.fetch(DISCORD_CHANNEL);
+        const channel = await client.channels.chache.find(channel => channel.type === "GUILD_TEXT");
         if (channel) {
           channel.send(`${userName}님이 채널에 참여했습니다!`);
         } else {
