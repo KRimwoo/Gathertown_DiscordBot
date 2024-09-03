@@ -3,11 +3,7 @@ const { Game } = require("@gathertown/gather-game-client");
 global.WebSocket = require("isomorphic-ws");
 
 // Discord 봇 토큰과 채널 ID
-const {
-  GATHER_API,
-  SPACE_ID,
-  DISCORD_TOKEN,
-} = require("./config.json");
+const { GATHER_API, SPACE_ID, DISCORD_TOKEN } = require("./config.json");
 
 // Discord 클라이언트 생성
 const client = new Client({
@@ -42,12 +38,27 @@ client.once("ready", () => {
 
       console.log(`${userName} has joined the space!`);
 
-      // 디스코드 채널에 메시지 전송
+      // 디스코드의 모든 채널에 메시지 전송
       try {
         client.guilds.cache.forEach((guild) => {
-          guild.channels.cache.forEach((channel) => {
+          guild.channels.cache.forEach(async (channel) => {
+            // 텍스트 채널인지 확인 및 권한 확인
             if (channel.isTextBased()) {
-              channel.send(`${userName}님이 참여하셨습니다.`);
+              const permissions = channel.permissionsFor(client.user);
+              if (permissions && permissions.has("SendMessages")) {
+                try {
+                  await channel.send(`${userName}님이 참여하셨습니다.`);
+                } catch (error) {
+                  // console.error(
+                  //   `Error sending message to ${channel.name}:`,
+                  //   error
+                  // );
+                }
+              } else {
+                // console.log(
+                //   `Missing SendMessages permission for channel: ${channel.name}`
+                // );
+              }
             }
           });
         });
@@ -65,8 +76,7 @@ client.on("messageCreate", async (message) => {
     console.log("Player count:", playerCount);
     if (playerCount === 0) {
       return message.channel.send("현재 참여자가 없습니다.");
-    }
-    else {
+    } else {
       let playerList = `현재 ${playerCount}명 (`;
       Object.values(game.players).forEach((player) => {
         playerList += `${player.name}, `;
